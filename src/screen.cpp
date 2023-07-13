@@ -109,12 +109,20 @@ void Screen_::setPixel(uint8_t x, uint8_t y, uint8_t value, uint8_t brightness)
 void IRAM_ATTR Screen_::onScreenTimer()
 {
   listenOnButtonToChangeMode();
-  Screen._render();
+  Screen.render();
 }
 
 void Screen_::setup()
 {
   // TODO find proper unused pins for MISO and SS
+  
+  #ifdef ESP8266
+  SPI.pins(PIN_CLOCK, 12, PIN_DATA, 15); // SCLK, MISO, MOSI, SS);
+  SPI.beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE0));
+  SPI.begin();
+  #endif
+  
+  #ifdef ESP32
   SPI.begin(PIN_CLOCK, 34, PIN_DATA, 25); // SCLK, MISO, MOSI, SS
   SPI.beginTransaction(SPISettings(10000000, MSBFIRST, SPI_MODE0));
 
@@ -122,16 +130,17 @@ void Screen_::setup()
   timerAttachInterrupt(Screen_timer, &onScreenTimer, true);
   timerAlarmWrite(Screen_timer, 200, true);
   timerAlarmEnable(Screen_timer);
+  #endif
 }
 
-void Screen_::_render()
+void Screen_::render()
 {
   const auto buf = this->getRotatedRenderBuffer();
 
-  static byte bits[ROWS * COLS / 8] = {0};
+  static ::byte bits[ROWS * COLS / 8] = {0};
   memset(bits, 0, ROWS * COLS / 8);
 
-  static byte counter = 0;
+  static ::byte counter = 0;
 
   for (int idx = 0; idx < ROWS * COLS; idx++)
   {

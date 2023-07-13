@@ -1,6 +1,12 @@
 #include <Arduino.h>
 #include <SPI.h>
+#ifdef ESP32
 #include <WiFi.h>
+#endif
+
+#ifdef ESP8266
+#include <ESP8266WiFi.h>
+#endif
 
 #include "constants.h"
 #include "mode/mode.h"
@@ -73,6 +79,7 @@ void setup()
 void loop()
 {
   loopOfAllModes();
+  Screen.render();
   unsigned long currentMillis = millis();
   // if WiFi is down, try reconnecting every CHECK_WIFI_TIME seconds
   if ((WiFi.status() != WL_CONNECTED) && (currentMillis - previousMillis >=interval)) {
