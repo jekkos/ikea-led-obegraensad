@@ -28,7 +28,10 @@
 
 // disable if you do not want to use the internal storage
 // https://randomnerdtutorials.com/esp32-save-data-permanently-preferences/
+// timer1 on esp8266 is not compatible with flash file system reads
+#ifndef ARDUINO_ESP8266
 #define ENABLE_STORAGE
+#endif
 
 #ifdef ENABLE_SERVER
 #define NTP_SERVER "de.pool.ntp.org"

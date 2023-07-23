@@ -40,7 +40,7 @@ void setup()
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   while (WiFi.status() != WL_CONNECTED && attempts < 7)
   {
-    delay(2000);
+    delay(2500);
     #ifndef ARDUINO_ESP8266_ESP01
     Serial.print(".");
     #endif
@@ -78,13 +78,14 @@ void setup()
 
 void loop()
 {
+  listenOnButtonToChangeMode();
   loopOfAllModes();
-  Screen.render();
   unsigned long currentMillis = millis();
   // if WiFi is down, try reconnecting every CHECK_WIFI_TIME seconds
   if ((WiFi.status() != WL_CONNECTED) && (currentMillis - previousMillis >=interval)) {
     Serial.println("Reconnecting to WiFi...");
     WiFi.disconnect();
+
     WiFi.reconnect();
     previousMillis = currentMillis;
   }
